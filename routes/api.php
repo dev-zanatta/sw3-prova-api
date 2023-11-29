@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::post('/usuarios', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
+
+
+
+Route::group(['middleware' => ['auth:sanctum']],  function () {
+    Route::get('/usuarios', [UserController::class, 'all']);
+
+    Route::post('/logout', function (Request $request) {
+        $request->user()->currentAccessToken()->delete();
+        return response()->json(['message' => 'logout'], 200);
+    })->name('logout');
 });
+
