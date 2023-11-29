@@ -10,6 +10,7 @@ class UsuarioController extends Controller
     //
     public function all()
     {
-        return Usuario::all();
+        $usuarios = Usuario::all();
+        return $this->successResponse($usuarios);
     }
 }
