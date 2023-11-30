@@ -60,4 +60,26 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function one($id)
+    {
+        $user = User::find($id);
+
+        return $this->successResponse($user);
+    }
+
+    public function update($id, Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'string',
+            'email' => 'email|unique:users,email',
+            'password' => 'min:6'
+        ]);
+
+        $user = User::find($id);
+        $user->fill($data);
+        $user->save();
+
+        return $this->successResponse($user);
+    }
+
 }

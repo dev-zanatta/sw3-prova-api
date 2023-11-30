@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth:sanctum']],  function () {
     //usuarios
     Route::get('/usuarios', [UserController::class, 'all']);
     Route::get('/usuarios/{id}', [UserController::class, 'one']);
-    Route::post('/usuarios', [UserController::class, 'create']);
+    Route::post('/usuarios', [UserController::class, 'register']);
     Route::put('/usuarios/{id}', [UserController::class, 'update']);
     Route::post('/logout', function (Request $request) {
         $request->user()->currentAccessToken()->delete();
