@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->integer('venda_id');
             $table->integer('produto_id');
+            $table->integer('quantidade');
+            $table->decimal('valor_total', 10, 2);
             $table->timestamps();
         });
     }

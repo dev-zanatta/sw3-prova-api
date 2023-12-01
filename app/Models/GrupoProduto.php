@@ -14,4 +14,9 @@ class GrupoProduto extends Model
     protected $fillable = [
         'descricao',
     ];
+
+    public function produtos()
+    {
+        return $this->belongsToMany(Produto::class, 'produto_grupo_produto', 'grupo_produto_id', 'produto_id');
+    }
 }

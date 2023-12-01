@@ -10,9 +10,15 @@ use App\Http\Controllers\Controller;
 class UserController extends Controller
 {
     //
-    public function all()
+    public function all(Request $request)
     {
-        $users = User::all();
+        $users = User::when($request->has('tipo') && $request->tipo != '', function($query) use ($request){
+            $query->where('tipo_usuario', $request->tipo);
+        })
+        ->orderBy('name')
+        ->select('users.*')
+        ->get();
+
         return $this->successResponse($users);
     }
 
@@ -27,6 +33,7 @@ class UserController extends Controller
         $user->name = $attrs['name'];
         $user->email = $attrs['email'];
         $user->password = bcrypt($attrs['password']);
+        $user->tipo_usuario = $request->tipo;
         $user->save();
 
         return response([
@@ -69,14 +76,15 @@ class UserController extends Controller
 
     public function update($id, Request $request)
     {
+        $user = User::find($id);
         $data = $request->validate([
             'name' => 'string',
-            'email' => 'email|unique:users,email',
+            'email' => 'email|unique:users,email,'.$user->id,
             'password' => 'min:6'
         ]);
 
-        $user = User::find($id);
         $user->fill($data);
+        $user->tipo = $request->tipo;
         $user->save();
 
         return $this->successResponse($user);

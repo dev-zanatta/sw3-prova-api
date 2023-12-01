@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Venda;
+use App\Models\VendaItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class VendaController extends Controller
 {
@@ -24,15 +26,26 @@ class VendaController extends Controller
 
     public function create(Request $request)
     {
-        $data = $request->only([
-            'descricao',
-            'valor',
-            'estoque',
-        ]);
+        $valor_total = 0;
+
+        foreach ($request->produtos as $produto) {
+            $valor_total += $produto['valor'] * $produto['quantidade'];
+        }
 
         $venda = new Venda();
-        $venda->fill($data);
+        $venda->usuario_comprou_id = $request->cliente_id;
+        $venda->usuario_vendeu_id = Auth::user()->id;
+        $venda->valor_total = $valor_total;
         $venda->save();
+
+        foreach ($request->produtos as $produto) {
+            $vendaItem = new VendaItem;
+            $vendaItem->venda_id = $venda->id;
+            $vendaItem->produto_id = $produto['id'];
+            $vendaItem->quantidade = $produto['quantidade'];
+            $vendaItem->valor_total = $produto['valor'] * $produto['quantidade'];
+            $vendaItem->save();
+        }
 
         return $this->successResponse($venda);
     }

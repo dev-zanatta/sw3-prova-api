@@ -16,7 +16,6 @@ return new class extends Migration
             $table->integer('usuario_comprou_id');
             $table->integer('usuario_vendeu_id');
             $table->decimal('valor_total', 10, 2);
-            $table->dateTime('data_hora_venda');
             $table->timestamps();
         });
     }

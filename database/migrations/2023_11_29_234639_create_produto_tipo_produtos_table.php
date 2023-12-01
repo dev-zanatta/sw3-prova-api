@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->integer('produto_id');
             $table->integer('tipo_produto_id');
-            $table->timestamps();
         });
     }
 
