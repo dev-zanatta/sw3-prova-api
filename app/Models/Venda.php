@@ -17,4 +17,19 @@ class Venda extends Model
         'data_hora_venda',
         'valor_total',
     ];
+
+    public function usuarioComprou()
+    {
+        return $this->hasOne(User::class, 'id', 'usuario_comprou_id');
+    }
+
+    public function usuarioVendeu()
+    {
+        return $this->hasOne(User::class, 'id', 'usuario_vendeu_id');
+    }
+
+    public function vendaItens()
+    {
+        return $this->hasMany(VendaItem::class, 'venda_id', 'id');
+    }
 }

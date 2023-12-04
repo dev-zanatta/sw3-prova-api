@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Produto;
 use App\Models\Venda;
 use App\Models\VendaItem;
 use Illuminate\Http\Request;
@@ -12,20 +13,37 @@ class VendaController extends Controller
     //
     public function all()
     {
-        $vendas = Venda::all();
+        $vendas = Venda::with([
+            'usuarioComprou:id,name',
+            'usuarioVendeu:id,name',
+            'vendaItens',
+            'vendaItens.produto:id,descricao',
+        ])->get();
 
         return $this->successResponse($vendas);
     }
 
     public function one($id)
     {
-        $venda = Venda::find($id);
+        $venda = Venda::with([
+            'usuarioComprou:id,name',
+            'usuarioVendeu:id,name',
+            'vendaItens',
+            'vendaItens.produto:id,descricao',
+        ])->first();
 
         return $this->successResponse($venda);
     }
 
     public function create(Request $request)
     {
+        foreach ($request->produtos as $produtoVenda) {
+            $produto = Produto::find($produtoVenda['id']);
+            if ($produto->estoque < $produtoVenda['quantidade']) {
+                return $this->errorResponse('Produto ' . $produto->descricao . ' não possui estoque suficiente', 200);
+            }
+        }
+
         $valor_total = 0;
 
         foreach ($request->produtos as $produto) {
@@ -46,6 +64,14 @@ class VendaController extends Controller
             $vendaItem->valor_total = $produto['valor'] * $produto['quantidade'];
             $vendaItem->save();
         }
+
+        foreach ($request->produtos as $produto) {
+            $produto = Produto::find($produto['id']);
+            $produto->estoque -= $produto['quantidade'];
+            $produto->save();
+        }
+
+
 
         return $this->successResponse($venda);
     }

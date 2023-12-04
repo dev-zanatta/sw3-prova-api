@@ -17,4 +17,9 @@ class VendaItem extends Model
         'quantidade',
         'valor_total',
     ];
+
+    public function produto()
+    {
+        return $this->hasOne(Produto::class, 'id', 'produto_id');
+    }
 }

@@ -24,15 +24,15 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        $attrs = $request ->validate([
+        $data = $request ->validate([
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6'
         ]);
         $user = new User();
-        $user->name = $attrs['name'];
-        $user->email = $attrs['email'];
-        $user->password = bcrypt($attrs['password']);
+        $user->name = $data['name'];
+        $user->email = $data['email'];
+        $user->password = bcrypt($data['password']);
         $user->tipo_usuario = $request->tipo;
         $user->save();
 
