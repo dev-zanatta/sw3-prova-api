@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GrupoProdutoController;
 use App\Http\Controllers\ProdutoController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\TipoProdutoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendaController;
@@ -59,6 +60,12 @@ Route::group(['middleware' => ['auth:sanctum']],  function () {
     Route::post('/vendas', [VendaController::class, 'create']);
     Route::put('/vendas/{id}', [VendaController::class, 'update']);
 
+    //relatorios
+    Route::get('/relatorio-melhor-vendedor', [RelatorioController::class, 'melhorVendedor']);
+    Route::get('/relatorio-melhor-cliente', [RelatorioController::class, 'melhorCliente']);
+    Route::get('/relatorio-produto-mais-vendido', [RelatorioController::class, 'maisVendido']);
+    Route::get('/relatorio-produto-menos-vendido', [RelatorioController::class, 'menosVendido']);
+    Route::get('/relatorio-media-valor-vendas', [RelatorioController::class, 'valorVendas']);
 
 });
 

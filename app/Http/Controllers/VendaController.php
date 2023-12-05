@@ -7,6 +7,7 @@ use App\Models\Venda;
 use App\Models\VendaItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class VendaController extends Controller
 {
@@ -44,34 +45,24 @@ class VendaController extends Controller
             }
         }
 
-        $valor_total = 0;
-
-        foreach ($request->produtos as $produto) {
-            $valor_total += $produto['valor'] * $produto['quantidade'];
-        }
-
         $venda = new Venda();
         $venda->usuario_comprou_id = $request->cliente_id;
         $venda->usuario_vendeu_id = Auth::user()->id;
-        $venda->valor_total = $valor_total;
+        $venda->valor_total = $request->soma_valor;
         $venda->save();
 
-        foreach ($request->produtos as $produto) {
+        foreach ($request->produtos as $produtoVendido) {
             $vendaItem = new VendaItem;
             $vendaItem->venda_id = $venda->id;
-            $vendaItem->produto_id = $produto['id'];
-            $vendaItem->quantidade = $produto['quantidade'];
-            $vendaItem->valor_total = $produto['valor'] * $produto['quantidade'];
+            $vendaItem->produto_id = $produtoVendido['id'];
+            $vendaItem->quantidade = $produtoVendido['quantidade'];
+            $vendaItem->valor_total = $produtoVendido['valor'] * $produtoVendido['quantidade'];
             $vendaItem->save();
-        }
 
-        foreach ($request->produtos as $produto) {
-            $produto = Produto::find($produto['id']);
-            $produto->estoque -= $produto['quantidade'];
+            $produto = Produto::find($produtoVendido['id']);
+            $produto->estoque -= $produtoVendido['quantidade'];
             $produto->save();
         }
-
-
 
         return $this->successResponse($venda);
     }
